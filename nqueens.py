@@ -1,29 +1,46 @@
 class Solution:
     def solveNQueens(self, n: int):
-        ans = []
-        def recurse(col, board, leftrow, lowerdiagonal, upperdiagonal):
+        res = []
+        def isValid(board, row ,col):
+            duprow, dupcol = row, col
+            while row >= 0 and col >= 0:
+                if board[row][col] == 'Q':
+                    return False
+                row -= 1
+                col -= 1
+            
+            row, col = duprow, dupcol
+            while col >= 0:
+                if board[row][col] == 'Q':
+                    return False
+                col-=1
+
+            row, col = duprow, dupcol
+            while row < n and col >= 0:
+                if board[row][col] == 'Q':
+                    return False
+                row += 1
+                col -= 1
+
+            return True
+
+        def recurse(col, board):
             if col == n:
-                ans.append(board.copy())
+                temp = []
+                for row in board:
+                    temp.append(''.join(row))
+                res.append(temp)
                 return
 
             for row in range(n):
-                if leftrow[row] == 0 and lowerdiagonal[row+col] == 0 and upperdiagonal[n-1+col-row] == 0:
+                if isValid(board, row, col):
                     board[row][col] = 'Q'
-                    leftrow[row] = 1
-                    lowerdiagonal[row+col] = 1
-                    upperdiagonal[n-1+col-row] = 1
-                    recurse(col+1, board, leftrow, lowerdiagonal, upperdiagonal)
+                    recurse(col+1, board)
                     board[row][col] = '.'
-                    leftrow[row] = 0
-                    lowerdiagonal[row+col] = 0
-                    upperdiagonal[n-1+col-row] = 0
         
         board = [['.' for _ in range(n)]for _ in range(n)]
-        leftrow = [0] * n
-        lowerdiagonal = [0] * (2*n - 1)
-        upperdiagonal = [0] * (2*n - 1)
-        recurse(0, board, leftrow, lowerdiagonal, upperdiagonal)
-        return ans
+        recurse(0, board)
+        return res
 
 s = Solution()
 print(s.solveNQueens(4))
